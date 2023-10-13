@@ -1,9 +1,11 @@
+chrome.runtime.onMessage.addListener(function(message) {
+    console.log("Message received in background.js:", message);
 
-chrome.runtime.onMessage.addListener((message) => {
-    if (message.url) {
+    if (message && message.content && message.filename) {
         chrome.downloads.download({
-            url: message.url,
-            filename: 'downloadedText.txt'
+            url: message.content,
+            filename: message.filename,
+            saveAs: true
         });
     }
 });
