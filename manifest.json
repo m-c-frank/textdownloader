@@ -3,7 +3,11 @@
   "name": "Text Downloader",
   "version": "1.0",
   "description": "Download text from selected div",
-  "permissions": ["activeTab", "storage"],
+  "permissions": [
+    "activeTab",
+    "downloads",
+    "storage"
+  ],
   "background": {
     "service_worker": "background.js"
   },
@@ -15,8 +19,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ]
     }
   ]
 }
