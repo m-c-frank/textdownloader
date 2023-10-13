@@ -27,12 +27,14 @@ document.getElementById('downloadText').addEventListener('click', function() {
             },
             args: []
         }).then(function(result) {
-            const blob = new Blob([result[0].result], {type: 'text/plain'});
-            const url = URL.createObjectURL(blob);
-            chrome.downloads.download({
-                url: url,
-                filename: document.getElementById('pathInput').value || 'selectedText.txt'
-            });
+            if (result && result[0] && result[0].result) {
+                const blob = new Blob([result[0].result], {type: 'text/plain'});
+                const url = URL.createObjectURL(blob);
+                chrome.downloads.download({
+                    url: url,
+                    filename: document.getElementById('pathInput').value || 'selectedText.txt'
+                });
+            }
         }).catch(function(err) {
             console.error(err);
         });
