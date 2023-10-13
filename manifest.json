@@ -1,17 +1,25 @@
-
 {
   "manifest_version": 3,
   "name": "Div Highlighter",
   "version": "1.0",
   "description": "Highlight divs on mouseover and download text on click",
-  "permissions": ["activeTab", "storage", "downloads", "scripting"],
+  "permissions": [
+    "activeTab",
+    "storage",
+    "downloads",
+    "scripting"
+  ],
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "matches": [
+        "https://chat.openai.com/*"
+      ],
+      "js": [
+        "content.js"
+      ]
     }
   ],
   "action": {
