@@ -1,16 +1,19 @@
 
-let hoveredElement = null;
+let highlightedElement = null;
 
 document.addEventListener('mouseover', function(event) {
-    if (hoveredElement) {
-        hoveredElement.style.outline = '';
+    if (highlightedElement) {
+        highlightedElement.style.outline = '';
     }
-    hoveredElement = event.target;
-    hoveredElement.style.outline = '2px solid red';
+    if (event.target.tagName.toLowerCase() === 'div') {
+        highlightedElement = event.target;
+        event.target.style.outline = '2px solid red';
+    }
 });
 
-document.addEventListener('mouseout', function(event) {
-    if (hoveredElement) {
-        hoveredElement.style.outline = '';
+document.addEventListener('click', function(event) {
+    if (event.target === highlightedElement && event.target.style.outline === '2px solid red') {
+        const textToDownload = event.target.innerText || event.target.textContent;
+        chrome.runtime.sendMessage({action: "download", data: textToDownload});
     }
 });

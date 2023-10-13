@@ -1,42 +1,9 @@
 
-// Load previously saved path if it exists
-chrome.storage.local.get('savePath', function(data) {
-    if (data.savePath) {
-        document.getElementById('pathInput').value = data.savePath;
-    }
-});
-
-// Save the path when the save button is clicked
-document.getElementById('savePath').addEventListener('click', function() {
-    const pathValue = document.getElementById('pathInput').value;
-    chrome.storage.local.set({'savePath': pathValue});
-});
-
-document.getElementById('downloadText').addEventListener('click', function() {
-    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-        let tab = tabs[0];
+document.getElementById('toggleHighlight').addEventListener('click', function() {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
         chrome.scripting.executeScript({
-            target: {tabId: tab.id},
-            func: function() {
-                let text = '';
-                const el = document.querySelector('div[style*="outline: 2px solid red"]');
-                if(el) {
-                    text = el.innerText || el.textContent;
-                }
-                return text;
-            },
-            args: []
-        }).then(function(result) {
-            if (result && result[0] && result[0].result) {
-                const blob = new Blob([result[0].result], {type: 'text/plain'});
-                const url = URL.createObjectURL(blob);
-                chrome.downloads.download({
-                    url: url,
-                    filename: document.getElementById('pathInput').value || 'selectedText.txt'
-                });
-            }
-        }).catch(function(err) {
-            console.error(err);
+            target: {tabId: tabs[0].id},
+            files: ['content.js']
         });
     });
 });
