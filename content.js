@@ -4,8 +4,10 @@ chrome.runtime.onMessage.addListener(function(message) {
     console.log("Message received in content.js:", message);
 
     if (message === 'toggle') {
-        highlighting = !highlighting;
-        console.log("Toggled highlighting state to:", highlighting);
+        chrome.storage.local.get(['isToggled'], function(result) {
+            highlighting = result.isToggled;
+            console.log("Highlighting state set to:", highlighting);
+        });
     }
 });
 

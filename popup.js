@@ -1,19 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOMContentLoaded for popup.js");
 
-    document.getElementById('toggle').addEventListener('click', () => {
+    document.getElementById('toggle').addEventListener('click', function() {
         console.log("Toggle button clicked in popup.js");
 
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            chrome.scripting.executeScript({
-                target: {tabId: tabs[0].id},
-                function: toggleHighlight,
-            });
+        chrome.storage.local.get(['isToggled'], function(result) {
+            const newState = !result.isToggled;
+            console.log("Setting toggled state to:", newState);
+            chrome.storage.local.set({isToggled: newState});
+            chrome.runtime.sendMessage('toggle');
         });
     });
 });
-
-function toggleHighlight() {
-    console.log("toggleHighlight function called in popup.js");
-    chrome.runtime.sendMessage('toggle');
-}
