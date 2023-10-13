@@ -1,7 +1,9 @@
 
+let isHighlighting = false;
 let highlightedElement = null;
 
-document.addEventListener('mouseover', function(event) {
+function handleMouseover(event) {
+    if (!isHighlighting) return;
     if (highlightedElement) {
         highlightedElement.style.outline = '';
     }
@@ -9,11 +11,23 @@ document.addEventListener('mouseover', function(event) {
         highlightedElement = event.target;
         event.target.style.outline = '2px solid red';
     }
-});
+}
 
-document.addEventListener('click', function(event) {
+function handleClick(event) {
     if (event.target === highlightedElement && event.target.style.outline === '2px solid red') {
         const textToDownload = event.target.innerText || event.target.textContent;
         chrome.runtime.sendMessage({action: "download", data: textToDownload});
+    }
+}
+
+document.addEventListener('mouseover', handleMouseover);
+document.addEventListener('click', handleClick);
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if (request.action === 'toggleHighlight') {
+        isHighlighting = !isHighlighting;
+        if (!isHighlighting && highlightedElement) {
+            highlightedElement.style.outline = '';
+        }
     }
 });
