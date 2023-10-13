@@ -1,3 +1,17 @@
+
+// Load previously saved path if it exists
+chrome.storage.local.get('savePath', function(data) {
+    if (data.savePath) {
+        document.getElementById('pathInput').value = data.savePath;
+    }
+});
+
+// Save the path when the save button is clicked
+document.getElementById('savePath').addEventListener('click', function() {
+    const pathValue = document.getElementById('pathInput').value;
+    chrome.storage.local.set({'savePath': pathValue});
+});
+
 document.getElementById('downloadText').addEventListener('click', function() {
     chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
         let tab = tabs[0];
@@ -21,7 +35,7 @@ document.getElementById('downloadText').addEventListener('click', function() {
             const url = URL.createObjectURL(blob);
             chrome.downloads.download({
                 url: url,
-                filename: 'selectedText.txt'
+                filename: document.getElementById('pathInput').value || 'selectedText.txt'
             });
         });
     });
