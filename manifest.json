@@ -1,10 +1,10 @@
 
 {
   "manifest_version": 3,
-  "name": "Div Downloader",
+  "name": "Div Highlighter",
   "version": "1.0",
-  "description": "Download text from div elements",
-  "permissions": ["activeTab", "downloads", "scripting"],
+  "description": "Highlight divs on mouseover and download text on click",
+  "permissions": ["activeTab", "storage", "downloads", "scripting"],
   "background": {
     "service_worker": "background.js"
   },

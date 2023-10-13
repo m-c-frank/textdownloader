@@ -1,13 +1,9 @@
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if (request.action === 'download') {
-        const textToDownload = request.data;
-        const fileName = `${Date.now()}.txt`;
-
+chrome.runtime.onMessage.addListener((message) => {
+    if (message.url) {
         chrome.downloads.download({
-            url: URL.createObjectURL(new Blob([textToDownload], {type: 'text/plain'})),
-            filename: fileName,
-            saveAs: true
+            url: message.url,
+            filename: 'downloadedText.txt'
         });
     }
 });

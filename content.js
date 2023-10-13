@@ -1,33 +1,33 @@
 
-let isHighlighting = false;
+let shouldHighlight = false;
 let highlightedElement = null;
 
-function handleMouseover(event) {
-    if (!isHighlighting) return;
-    if (highlightedElement) {
-        highlightedElement.style.outline = '';
-    }
-    if (event.target.tagName.toLowerCase() === 'div') {
-        highlightedElement = event.target;
-        event.target.style.outline = '2px solid red';
-    }
-}
-
-function handleClick(event) {
-    if (event.target === highlightedElement && event.target.style.outline === '2px solid red') {
-        const textToDownload = event.target.innerText || event.target.textContent;
-        chrome.runtime.sendMessage({action: "download", data: textToDownload});
-    }
-}
-
-document.addEventListener('mouseover', handleMouseover);
-document.addEventListener('click', handleClick);
-
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if (request.action === 'toggleHighlight') {
-        isHighlighting = !isHighlighting;
-        if (!isHighlighting && highlightedElement) {
+document.addEventListener('mouseover', (e) => {
+    if (shouldHighlight && e.target.tagName.toLowerCase() === 'div') {
+        if (highlightedElement) {
             highlightedElement.style.outline = '';
         }
+        highlightedElement = e.target;
+        e.target.style.outline = '2px solid red';
+    }
+});
+
+document.addEventListener('mouseout', (e) => {
+    if (shouldHighlight && highlightedElement) {
+        highlightedElement.style.outline = '';
+    }
+});
+
+document.addEventListener('click', (e) => {
+    if (shouldHighlight && e.target === highlightedElement) {
+        const blob = new Blob([e.target.innerText], {type: "text/plain"});
+        const url = URL.createObjectURL(blob);
+        chrome.runtime.sendMessage({url: url});
+    }
+});
+
+chrome.runtime.onMessage.addListener((message) => {
+    if (message === 'toggle') {
+        shouldHighlight = !shouldHighlight;
     }
 });
