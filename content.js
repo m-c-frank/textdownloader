@@ -1,73 +1,114 @@
-let isToggled = false;
-let highlightedElement;
+let selectedElement;
 
-function init() {
-    // Listen to messages from the popup to toggle the state
-    chrome.runtime.onMessage.addListener((message) => {
-        if (message === 'toggle') {
-            isToggled = !isToggled;
-            console.log("Toggled State via popup:", isToggled);
-            if (!isToggled && highlightedElement) {
-                removeHighlight(highlightedElement);
-            }
-        }
-    });
-}
+// Listen for runtime messages
+chrome.runtime.onMessage.addListener((message) => {
+    switch(message.type) {
+        case 'toggleUpdate':
+            handleToggleUpdate(message.isToggled);
+            break;
+    }
+});
 
-document.addEventListener('keydown', function(event) {
+// Key listener for toggling
+document.addEventListener('keydown', (event) => {
     if (event.key === 't') {
         const activeElement = document.activeElement;
-        if (activeElement && activeElement.tagName && 
-            (activeElement.tagName.toLowerCase() !== 'input' && 
-             activeElement.tagName.toLowerCase() !== 'textarea')) {
-            isToggled = !isToggled;
-            console.log("Toggled State via keypress:", isToggled);
+        if (activeElement && activeElement.tagName &&
+            !['input', 'textarea'].includes(activeElement.tagName.toLowerCase())) {
+            chrome.runtime.sendMessage({ type: 'requestToggle' });
         }
     }
 });
 
 document.addEventListener('mouseover', (event) => {
-    if (isToggled && event.target && event.target.tagName && 
-        event.target.tagName.toLowerCase() === 'div') {
-        console.log("Mouse entered a div. Adding highlight to:", event.target);
-        addHighlight(event.target);
+    if (event.target.tagName && event.target.tagName.toLowerCase() === 'div') {
+        event.target.classList.add('highlighted');
     }
 });
 
 document.addEventListener('mouseout', (event) => {
-    if (event.target && event.target.tagName && 
-        event.target.tagName.toLowerCase() === 'div') {
-        console.log("Mouse left a div. Removing highlight from:", event.target);
-        removeHighlight(event.target);
+    if (event.target.tagName && event.target.tagName.toLowerCase() === 'div' && event.target !== selectedElement) {
+        event.target.classList.remove('highlighted');
     }
 });
 
 document.addEventListener('mousedown', (event) => {
     if (event.button !== 0) return;
-    console.log("Clicked on an element:", event.target);
-    if (event.target.tagName && event.target.tagName.toLowerCase() === 'div') {
-        console.log("Clicked on a div.");
-        if (isToggled) {
-            console.log("Clicked on a highlighted div.");
-            const divText = event.target.innerText || event.target.textContent;
-            downloadText(divText);
-        }
+    if (event.target.classList.contains('highlighted')) {
+        selectElement(event.target);
     }
 });
 
-function addHighlight(element) {
-    if (highlightedElement) {
-        removeHighlight(highlightedElement);
+function handleToggleUpdate(isToggled) {
+    if (!isToggled && selectedElement) {
+        deselectElement();
     }
-    highlightedElement = element;
-    element.style.outline = '2px solid red';
-    console.log("Highlighted element:", element);
 }
 
-function removeHighlight(element) {
-    if (element) {
-        element.style.outline = '';
-        console.log("Removed highlight from element:", element);
+function selectElement(element) {
+    if (selectedElement) {
+        deselectElement();
+    }
+    selectedElement = element;
+    selectedElement.style.outline = '4px dashed blue';
+    displaySelectionOptions(element);
+}
+
+function deselectElement() {
+    if (selectedElement) {
+        selectedElement.style.outline = '';
+        selectedElement.classList.remove('highlighted');
+        hideSelectionOptions();
+    }
+}
+
+function displaySelectionOptions(element) {
+    let optionsDiv = document.getElementById('selectionOptions');
+    
+    if (!optionsDiv) {
+        optionsDiv = document.createElement('div');
+        optionsDiv.id = 'selectionOptions';
+        optionsDiv.style.position = 'fixed';
+        optionsDiv.style.top = '10px';
+        optionsDiv.style.right = '10px';
+        optionsDiv.style.background = '#f5f5f5';
+        optionsDiv.style.padding = '10px';
+        optionsDiv.style.zIndex = '99999';
+        document.body.appendChild(optionsDiv);
+        
+        const highlightParentButton = document.createElement('button');
+        highlightParentButton.innerText = 'Highlight Parent';
+        highlightParentButton.onclick = () => {
+            if (selectedElement && selectedElement.parentElement) {
+                selectedElement.parentElement.classList.add('highlighted');
+                selectElement(selectedElement.parentElement);
+            }
+        };
+        optionsDiv.appendChild(highlightParentButton);
+
+        const downloadButton = document.createElement('button');
+        downloadButton.innerText = 'Download Content';
+        downloadButton.onclick = () => {
+            if (selectedElement) {
+                const divText = selectedElement.innerText || selectedElement.textContent;
+                downloadText(divText);
+            }
+        };
+        optionsDiv.appendChild(downloadButton);
+
+        const deselectButton = document.createElement('button');
+        deselectButton.innerText = 'Deselect';
+        deselectButton.onclick = deselectElement;
+        optionsDiv.appendChild(deselectButton);
+    } else {
+        optionsDiv.style.display = 'block';
+    }
+}
+
+function hideSelectionOptions() {
+    const optionsDiv = document.getElementById('selectionOptions');
+    if (optionsDiv) {
+        optionsDiv.style.display = 'none';
     }
 }
 
@@ -82,6 +123,3 @@ function downloadText(text) {
     a.remove();
     URL.revokeObjectURL(url);
 }
-
-// Initialize the state and listeners
-init();

@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         initialize() {
             // Get initial states from storage
-            chrome.storage.sync.get(['defaultLocation', 'isToggled'], data => {
+            chrome.storage.local.get(['defaultLocation', 'isToggled'], data => {
                 this.updateLocationInput(data.defaultLocation);
                 const isToggled = data.isToggled || false;
                 this.updateToggleButtonText(isToggled);
@@ -30,15 +30,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const newState = !data.isToggled;
                 chrome.storage.local.set({ isToggled: newState }, () => {
                     UIController.updateToggleButtonText(newState);
-                    chrome.runtime.sendMessage('toggle');
-                    
-                    // Execute the toggleHighlight function in the content script
-                    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-                        chrome.scripting.executeScript({
-                            target: { tabId: tabs[0].id },
-                            function: toggleHighlight,  // assuming toggleHighlight function is present in content script
-                        });
-                    });
+                    // Send the toggle message to the content script
+                    chrome.runtime.sendMessage('toggleHighlight');
                 });
             });
         },
