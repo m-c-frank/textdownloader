@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Div Highlighter",
+  "name": "TextDownloader",
   "version": "1.0",
   "description": "Highlight divs on mouseover and download text on click",
   "permissions": [
@@ -12,10 +12,20 @@
   "background": {
     "service_worker": "background.js"
   },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icons/*.svg"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
   "content_scripts": [
     {
       "matches": [
-        "https://chat.openai.com/*"
+        "<all_urls>"
       ],
       "js": [
         "content.js"

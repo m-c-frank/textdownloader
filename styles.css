@@ -5,3 +5,36 @@
 .selected-div {
     background-color: orange !important;
 }
+
+#selectionOptions {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: #fff;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    z-index: 99999;
+}
+
+#selectionOptions button {
+    background: #6200ea;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    margin: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+}
+
+#selectionOptions button:hover {
+    background: #3700b3;
+}
+
+.material-icons {
+    margin-right: 5px;
+}

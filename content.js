@@ -2,8 +2,13 @@ let highlightedElement = null;  // Currently highlighted element
 let isHighlightMode = false;
 
 document.addEventListener('keydown', function(event) {
+    if (event.keyCode === 27) {  // ESC key code
+        clearSelections();
+    }
+});
+
+document.addEventListener('keydown', function(event) {
     if (event.shiftKey && event.key.toLowerCase() === 't') {
-        console.debug("[DEBUG] Shift+T pressed");
         isHighlightMode = true;
         document.body.style.userSelect = "none";
     }
@@ -11,7 +16,6 @@ document.addEventListener('keydown', function(event) {
 
 document.addEventListener('keyup', function(event) {
     if (event.shiftKey && event.key.toLowerCase() === 't') {
-        console.debug("[DEBUG] Shift+T released");
         isHighlightMode = false;
         document.body.style.userSelect = "";
     }
@@ -21,15 +25,13 @@ document.addEventListener('mouseover', handleMouseOver);
 document.addEventListener('mouseout', handleMouseOut);
 
 function handleMouseOver(event) {
-    if (isHighlightMode && event.target && event.target.tagName && 
-        event.target.tagName.toLowerCase() === 'div') {
+    if (isHighlightMode && isValidTarget(event.target)) {
         addHighlight(event.target);
     }
 }
 
 function handleMouseOut(event) {
-    if (isHighlightMode && event.target && event.target.tagName && 
-        event.target.tagName.toLowerCase() === 'div') {
+    if (isHighlightMode && isValidTarget(event.target)) {
         removeHighlight(event.target);
     }
 }
@@ -49,70 +51,78 @@ function addHighlight(element) {
 }
 
 function removeHighlight(element) {
-    if (element) {
-        element.classList.remove('highlighted-div');
-    }
-    highlightedElement = null;  // Reset the highlighted element when removing the highlight
+    element.classList.remove('highlighted-div');
+    highlightedElement = null;
 }
 
 function selectElement(element) {
-    if (highlightedElement) {
-        removeHighlight(highlightedElement);
-    }
+    removeHighlight(element);
     element.classList.add('selected-div');
     displaySelectionOptions(element);
 }
 
 function displaySelectionOptions(element) {
-    let optionsDiv = document.getElementById('selectionOptions');
-    if (!optionsDiv) {
-        optionsDiv = document.createElement('div');
-        optionsDiv.id = 'selectionOptions';
-        optionsDiv.style.position = 'fixed';
-        optionsDiv.style.top = '10px';
-        optionsDiv.style.right = '10px';
-        optionsDiv.style.background = '#f5f5f5';
-        optionsDiv.style.padding = '10px';
-        optionsDiv.style.zIndex = '99999';
-        document.body.appendChild(optionsDiv);
-        
-        const highlightParentButton = document.createElement('button');
-        highlightParentButton.innerText = 'Highlight Parent';
-        highlightParentButton.onclick = () => {
-            if (element && element.parentElement) {
-                addHighlight(element.parentElement);
-                selectElement(element.parentElement);
-            }
-        };
-        optionsDiv.appendChild(highlightParentButton);
-
-        const downloadButton = document.createElement('button');
-        downloadButton.innerText = 'Download Content';
-        downloadButton.onclick = () => {
-            if (element) {
-                const divText = element.innerText || element.textContent;
-                downloadText(divText);
-            }
-        };
-        optionsDiv.appendChild(downloadButton);
-
-        const deselectButton = document.createElement('button');
-        deselectButton.innerText = 'Deselect';
-        deselectButton.onclick = () => {
-            element.classList.remove('selected-div');
-            hideSelectionOptions();
-        };
-        optionsDiv.appendChild(deselectButton);
-    } else {
-        optionsDiv.style.display = 'block';
-    }
+    let optionsDiv = getOptionsDiv();
+    optionsDiv.style.display = 'block';
 }
 
-function hideSelectionOptions() {
-    const optionsDiv = document.getElementById('selectionOptions');
-    if (optionsDiv) {
-        optionsDiv.style.display = 'none';
+function getOptionsDiv() {
+    let optionsDiv = document.getElementById('selectionOptions');
+    if (!optionsDiv) {
+        optionsDiv = createOptionsDiv();
     }
+    return optionsDiv;
+}
+
+function createOptionsDiv() {
+    let optionsDiv = document.createElement('div');
+    optionsDiv.id = 'selectionOptions';
+    styleOptionsDiv(optionsDiv);
+
+    const highlightParentButton = createButton('icons/folder.svg', 'Highlight Parent', () => {
+        if (highlightedElement && highlightedElement.parentElement) {
+            selectElement(highlightedElement.parentElement);
+        }
+    });
+    optionsDiv.appendChild(highlightParentButton);
+
+    const downloadButton = createButton('icons/download.svg', 'Download Content', () => {
+        if (highlightedElement) {
+            const content = highlightedElement.innerText || highlightedElement.textContent;
+            downloadText(content);
+        }
+    });
+    optionsDiv.appendChild(downloadButton);
+
+    const deselectButton = createButton('icons/close.svg', 'Deselect', () => {
+        if (highlightedElement) {
+            highlightedElement.classList.remove('selected-div');
+            optionsDiv.style.display = 'none';
+        }
+    });
+    optionsDiv.appendChild(deselectButton);
+
+    document.body.appendChild(optionsDiv);
+    return optionsDiv;
+}
+
+function createButton(iconPath, text, onClick) {
+    const resolvedIconPath = chrome.runtime.getURL(iconPath);
+    const btn = document.createElement('button');
+    btn.innerHTML = `<img src="${resolvedIconPath}" alt="${text}" style="width:24px;height:24px;vertical-align:middle;margin-right:8px;">${text}`;
+    btn.onclick = onClick;
+    return btn;
+}
+
+
+function styleOptionsDiv(div) {
+    div.style.position = 'fixed';
+    div.style.top = '10px';
+    div.style.right = '10px';
+    div.style.background = '#f5f5f5';
+    div.style.padding = '10px';
+    div.style.zIndex = '99999';
+    div.style.display = 'none';
 }
 
 function downloadText(text) {
@@ -125,4 +135,18 @@ function downloadText(text) {
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+}
+
+function clearSelections() {
+    if (highlightedElement) {
+        removeHighlight(highlightedElement);
+    }
+    const selectedDivs = document.querySelectorAll('.selected-div');
+    selectedDivs.forEach(div => div.classList.remove('selected-div'));
+    const optionsDiv = getOptionsDiv();
+    optionsDiv.style.display = 'none';
+}
+
+function isValidTarget(target) {
+    return target && target.tagName && target.tagName.toLowerCase() === 'div';
 }
