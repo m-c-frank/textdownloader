@@ -22,10 +22,6 @@ textdownloader is a user-friendly browser extension that simplifies the process 
 
 - **Deselect**: Click "Deselect" to clear all selections and exit highlight mode.
 
-### User-Friendly Interface
-
-Use the extension's user interface to configure a default download location for text files.
-
 ## Getting Started
 
 To get started with textdownloader, follow these simple steps:
@@ -44,9 +40,6 @@ Once the extension is installed and activated, open a web page in your browser.
 
 4. **Start Using textdownloader**:
 Use the provided keyboard shortcuts and interface buttons to highlight, select, and download text content from web pages.
-
-5. **Configure Default Download Location**:
-Use the extension's user interface to configure a default download location for text files.
 
 ## Compatibility
 
