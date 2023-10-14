@@ -1,34 +1,11 @@
-function highlightParentHandler() {
-    if (highlightedElement && highlightedElement.parentElement) {
-        addHighlight(highlightedElement.parentElement);
-        selectElement(highlightedElement.parentElement);
+function getOptionsDiv() {
+    let optionsDiv = document.getElementById('selectionOptions');
+    if (!optionsDiv) {
+        optionsDiv = createOptionsDiv();
+    } else {
+        optionsDiv.style.display = 'block';
     }
-}
-
-function downloadContentHandler() {
-    if (highlightedElement) {
-        const divText = highlightedElement.innerText || highlightedElement.textContent;
-        downloadText(divText);
-    }
-}
-
-function deselectHandler() {
-    if (highlightedElement) {
-        highlightedElement.classList.remove('selected-div');
-        hideSelectionOptions();
-    }
-}
-
-function downloadText(text) {
-    const blob = new Blob([text], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `text-${Date.now()}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+    return optionsDiv;
 }
 
 function createOptionsDiv() {
@@ -68,4 +45,40 @@ function hideSelectionOptions() {
     if (optionsDiv) {
         optionsDiv.style.display = 'none';
     }
+}
+
+function highlightParentHandler() {
+    const highlightedElement = getHighlightedElement();
+    if (highlightedElement && highlightedElement.parentElement) {
+        addHighlight(highlightedElement.parentElement);
+        selectElement(highlightedElement.parentElement);
+    }
+}
+
+function downloadContentHandler() {
+    const highlightedElement = getHighlightedElement();
+    if (highlightedElement) {
+        const divText = highlightedElement.innerText || highlightedElement.textContent;
+        downloadText(divText);
+    }
+}
+
+function deselectHandler() {
+    const highlightedElement = getHighlightedElement();
+    if (highlightedElement) {
+        highlightedElement.classList.remove('selected-div');
+        hideSelectionOptions();
+    }
+}
+
+function downloadText(text) {
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `text-${Date.now()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
 }

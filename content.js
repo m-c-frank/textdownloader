@@ -1,5 +1,6 @@
-let highlightedElement = null;
 let isHighlightMode = false;
+const HIGHLIGHT_DATA_ATTRIBUTE = 'data-highlight-id';
+let currentHighlightId = null;
 
 document.addEventListener('keydown', handleKeyDown);
 document.addEventListener('keyup', handleKeyUp);
