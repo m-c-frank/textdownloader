@@ -23,12 +23,15 @@ function handleKeyUp(event) {
     // If in INTERACTION state, do not proceed with further checks, just return.
     if (currentState === State.INTERACTION) return;
 
-    if (currentState !== State.SELECTION_ACTIVE && (!event.shiftKey || event.key.toLowerCase() === 't')) {
+    if (!event.shiftKey || event.key.toLowerCase() === 't') {
         isHighlightMode = false;
         document.body.style.userSelect = "";
-        deselectAll();
+        if (currentState !== State.SELECTION_ACTIVE) {
+            deselectAll();
+        }
     }
 }
+
 
 function handleMouseOver(event) {
     log("handleMouseOver triggered", event.target);
@@ -79,10 +82,12 @@ function getHighlightedElement() {
 
 function selectElement(element) {
     log("Selecting element", element);
+    isHighlightMode = false;  // Deactivate highlighting mode
     element.classList.add('selected-div');
     displaySelectionOptions();
-    currentState = State.INTERACTION; // Set to INTERACTION state
+    currentState = State.INTERACTION;
 }
+
 
 
 function deselectAll() {

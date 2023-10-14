@@ -71,7 +71,7 @@ function downloadContentHandler() {
 
 function deselectHandler() {
     log("Deselecting element");
-
+    isHighlightMode=false;
     // Remove highlight from all highlighted elements
     const highlightedElements = document.querySelectorAll(`[${HIGHLIGHT_DATA_ATTRIBUTE}]`);
     highlightedElements.forEach(element => {
