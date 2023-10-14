@@ -1,77 +1,59 @@
-const State = {
-    INITIAL: 'initial',
-    SELECTION: 'selection',
-    NORMAL: 'normal',
-};
-
-let currentState = State.INITIAL;
+function log(...messages) {
+    if (currentState === State.HIGHLIGHTING || currentState === State.SELECTION_ACTIVE) {
+        console.debug(...messages);
+    }
+}
 
 function handleKeyDown(event) {
     log("handleKeyDown triggered", event);
     if (event.keyCode === 27) {  // ESC key
-        const highlightedElement = getHighlightedElement();
-        if (highlightedElement) {
-            log("Removing highlight in handleKeyDown");
-            removeHighlight(highlightedElement);
-        }
-        const selectedDivs = document.querySelectorAll('.selected-div');
-        selectedDivs.forEach(div => div.classList.remove('selected-div'));
-        hideSelectionOptions();
-        isHighlightMode = false;
-        document.body.style.userSelect = "";
-        currentState = State.NORMAL;  // Return to NORMAL state after ESC key
+        deselectAll();
     }
 
-    if (event.shiftKey && event.key.toLowerCase() === 't' && currentState !== State.SELECTION) {
+    if (event.shiftKey && event.key.toLowerCase() === 't' && currentState === State.NORMAL) {
         isHighlightMode = true;
+        currentState = State.HIGHLIGHTING;
         document.body.style.userSelect = "none";
     }
 }
 
 function handleKeyUp(event) {
     log("handleKeyUp triggered", event);
-    if (!event.shiftKey || event.key.toLowerCase() === 't') {
+    
+    // If in INTERACTION state, do not proceed with further checks, just return.
+    if (currentState === State.INTERACTION) return;
+
+    if (currentState !== State.SELECTION_ACTIVE && (!event.shiftKey || event.key.toLowerCase() === 't')) {
         isHighlightMode = false;
         document.body.style.userSelect = "";
         deselectAll();
     }
 }
 
-function deselectAll() {
-    const highlightedElement = getHighlightedElement();
-    if (highlightedElement) {
-        removeHighlight(highlightedElement);
-    }
-    const selectedDivs = document.querySelectorAll('.selected-div');
-    selectedDivs.forEach(div => div.classList.remove('selected-div'));
-    hideSelectionOptions();
-    currentState = State.NORMAL;
-}
-
 function handleMouseOver(event) {
     log("handleMouseOver triggered", event.target);
-    if (isHighlightMode && currentState !== State.SELECTION && event.target && event.target.tagName &&
-        event.target.tagName.toLowerCase() === 'div') {
+    if (currentState !== State.INTERACTION && isHighlightMode && event.target && event.target.tagName && event.target.tagName.toLowerCase() === 'div') {
         addHighlight(event.target);
     }
 }
 
 function handleMouseOut(event) {
     log("handleMouseOut triggered", event.target);
-    if (isHighlightMode && currentState !== State.SELECTION && event.target && event.target.tagName &&
-        event.target.tagName.toLowerCase() === 'div') {
+    if (currentState !== State.INTERACTION && isHighlightMode && event.target && event.target.tagName && event.target.tagName.toLowerCase() === 'div') {
         removeHighlight(event.target);
     }
 }
 
 function handleMouseDown(event) {
     log("handleMouseDown triggered", event);
+    if (currentState === State.INTERACTION) return;  // Do nothing if in INTERACTION state
+
     const highlightedElement = getHighlightedElement();
-    if (isHighlightMode && currentState !== State.SELECTION && highlightedElement) {
+    if (isHighlightMode && highlightedElement) {
         selectElement(highlightedElement);
-        currentState = State.SELECTION;  // Move to SELECTION state
     }
 }
+
 
 function addHighlight(element) {
     log("Adding highlight to element", element);
@@ -97,22 +79,20 @@ function getHighlightedElement() {
 
 function selectElement(element) {
     log("Selecting element", element);
-    removeHighlight(element);
     element.classList.add('selected-div');
     displaySelectionOptions();
+    currentState = State.INTERACTION; // Set to INTERACTION state
 }
 
-function deselectHandler() {
+
+function deselectAll() {
+    log("Deselecting all elements");
     const highlightedElement = getHighlightedElement();
     if (highlightedElement) {
-        highlightedElement.classList.remove('selected-div');
-        hideSelectionOptions();
-        currentState = State.NORMAL; // Return to NORMAL state
+        highlightedElement.classList.remove('highlighted-div');
     }
-}
-
-function log(...args) {
-    if (isHighlightMode) {
-        console.debug(...args);
-    }
+    const selectedDivs = document.querySelectorAll('.selected-div');
+    selectedDivs.forEach(div => div.classList.remove('selected-div'));
+    hideSelectionOptions();
+    currentState = State.NORMAL;
 }

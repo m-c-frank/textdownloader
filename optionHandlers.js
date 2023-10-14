@@ -1,3 +1,9 @@
+
+function displaySelectionOptions() {
+    const optionsDiv = getOptionsDiv();
+    document.body.appendChild(optionsDiv);
+}
+
 function getOptionsDiv() {
     let optionsDiv = document.getElementById('selectionOptions');
     if (!optionsDiv) {
