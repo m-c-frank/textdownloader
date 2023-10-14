@@ -28,7 +28,8 @@
         "<all_urls>"
       ],
       "js": [
-        "selectionMenu.js",
+        "eventHandlers.js",
+        "optionHandlers.js",
         "content.js"
       ],
       "css": [
