@@ -1,8 +1,7 @@
-.highlighted {
-    background: red;
-    outline: 2px solid red;
+.highlighted-div {
+    background-color: yellow !important;
 }
 
-.selected {
-    outline: 4px dashed blue;
+.selected-div {
+    background-color: orange !important;
 }

@@ -1,70 +1,70 @@
-let selectedElement;
+let highlightedElement = null;  // Currently highlighted element
+let isHighlightMode = false;
 
-// Listen for runtime messages
-chrome.runtime.onMessage.addListener((message) => {
-    switch(message.type) {
-        case 'toggleUpdate':
-            handleToggleUpdate(message.isToggled);
-            break;
+document.addEventListener('keydown', function(event) {
+    if (event.shiftKey && event.key.toLowerCase() === 't') {
+        console.debug("[DEBUG] Shift+T pressed");
+        isHighlightMode = true;
+        document.body.style.userSelect = "none";
     }
 });
 
-// Key listener for toggling
-document.addEventListener('keydown', (event) => {
-    if (event.key === 't') {
-        const activeElement = document.activeElement;
-        if (activeElement && activeElement.tagName &&
-            !['input', 'textarea'].includes(activeElement.tagName.toLowerCase())) {
-            chrome.runtime.sendMessage({ type: 'requestToggle' });
-        }
+document.addEventListener('keyup', function(event) {
+    if (event.shiftKey && event.key.toLowerCase() === 't') {
+        console.debug("[DEBUG] Shift+T released");
+        isHighlightMode = false;
+        document.body.style.userSelect = "";
     }
 });
 
-document.addEventListener('mouseover', (event) => {
-    if (event.target.tagName && event.target.tagName.toLowerCase() === 'div') {
-        event.target.classList.add('highlighted');
-    }
-});
+document.addEventListener('mouseover', handleMouseOver);
+document.addEventListener('mouseout', handleMouseOut);
 
-document.addEventListener('mouseout', (event) => {
-    if (event.target.tagName && event.target.tagName.toLowerCase() === 'div' && event.target !== selectedElement) {
-        event.target.classList.remove('highlighted');
+function handleMouseOver(event) {
+    if (isHighlightMode && event.target && event.target.tagName && 
+        event.target.tagName.toLowerCase() === 'div') {
+        addHighlight(event.target);
     }
-});
+}
+
+function handleMouseOut(event) {
+    if (isHighlightMode && event.target && event.target.tagName && 
+        event.target.tagName.toLowerCase() === 'div') {
+        removeHighlight(event.target);
+    }
+}
 
 document.addEventListener('mousedown', (event) => {
-    if (event.button !== 0) return;
-    if (event.target.classList.contains('highlighted')) {
-        selectElement(event.target);
+    if (isHighlightMode && highlightedElement) {
+        selectElement(highlightedElement);
     }
 });
 
-function handleToggleUpdate(isToggled) {
-    if (!isToggled && selectedElement) {
-        deselectElement();
+function addHighlight(element) {
+    if (highlightedElement) {
+        removeHighlight(highlightedElement);
     }
+    highlightedElement = element;
+    element.classList.add('highlighted-div');
+}
+
+function removeHighlight(element) {
+    if (element) {
+        element.classList.remove('highlighted-div');
+    }
+    highlightedElement = null;  // Reset the highlighted element when removing the highlight
 }
 
 function selectElement(element) {
-    if (selectedElement) {
-        deselectElement();
+    if (highlightedElement) {
+        removeHighlight(highlightedElement);
     }
-    selectedElement = element;
-    selectedElement.style.outline = '4px dashed blue';
+    element.classList.add('selected-div');
     displaySelectionOptions(element);
-}
-
-function deselectElement() {
-    if (selectedElement) {
-        selectedElement.style.outline = '';
-        selectedElement.classList.remove('highlighted');
-        hideSelectionOptions();
-    }
 }
 
 function displaySelectionOptions(element) {
     let optionsDiv = document.getElementById('selectionOptions');
-    
     if (!optionsDiv) {
         optionsDiv = document.createElement('div');
         optionsDiv.id = 'selectionOptions';
@@ -79,9 +79,9 @@ function displaySelectionOptions(element) {
         const highlightParentButton = document.createElement('button');
         highlightParentButton.innerText = 'Highlight Parent';
         highlightParentButton.onclick = () => {
-            if (selectedElement && selectedElement.parentElement) {
-                selectedElement.parentElement.classList.add('highlighted');
-                selectElement(selectedElement.parentElement);
+            if (element && element.parentElement) {
+                addHighlight(element.parentElement);
+                selectElement(element.parentElement);
             }
         };
         optionsDiv.appendChild(highlightParentButton);
@@ -89,8 +89,8 @@ function displaySelectionOptions(element) {
         const downloadButton = document.createElement('button');
         downloadButton.innerText = 'Download Content';
         downloadButton.onclick = () => {
-            if (selectedElement) {
-                const divText = selectedElement.innerText || selectedElement.textContent;
+            if (element) {
+                const divText = element.innerText || element.textContent;
                 downloadText(divText);
             }
         };
@@ -98,7 +98,10 @@ function displaySelectionOptions(element) {
 
         const deselectButton = document.createElement('button');
         deselectButton.innerText = 'Deselect';
-        deselectButton.onclick = deselectElement;
+        deselectButton.onclick = () => {
+            element.classList.remove('selected-div');
+            hideSelectionOptions();
+        };
         optionsDiv.appendChild(deselectButton);
     } else {
         optionsDiv.style.display = 'block';

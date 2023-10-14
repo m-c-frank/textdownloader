@@ -1,18 +1,32 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
+
 <head>
-    <title>Div Downloader</title>
+    <title>Highlighter Extension</title>
     <style>
         body {
             width: 200px;
+            font-family: Arial, sans-serif;
+            margin: 10px;
+        }
+
+        #location {
+            width: 100%;
+        }
+
+        button {
+            margin-top: 10px;
+            width: 100%;
         }
     </style>
 </head>
+
 <body>
-    <button id="toggle">Toggle Highlight</button>
-    <br><br>
-    <input type="text" id="location" placeholder="Default save location">
-    <button id="save">Save</button>
+    <h3>Settings</h3>
+    <label for="location">Default Download Location:</label>
+    <input type="text" id="location">
+    <button id="save">Save Location</button>
     <script src="popup.js"></script>
 </body>
+
 </html>
