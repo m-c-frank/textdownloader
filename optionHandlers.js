@@ -70,12 +70,26 @@ function downloadContentHandler() {
 }
 
 function deselectHandler() {
-    const highlightedElement = getHighlightedElement();
-    if (highlightedElement) {
-        highlightedElement.classList.remove('selected-div');
-        hideSelectionOptions();
-    }
+    log("Deselecting element");
+
+    // Remove highlight from all highlighted elements
+    const highlightedElements = document.querySelectorAll(`[${HIGHLIGHT_DATA_ATTRIBUTE}]`);
+    highlightedElements.forEach(element => {
+        element.classList.remove('highlighted-div');
+        element.removeAttribute(HIGHLIGHT_DATA_ATTRIBUTE);
+    });
+
+    // Remove selection from all selected elements
+    const selectedDivs = document.querySelectorAll('.selected-div');
+    selectedDivs.forEach(div => div.classList.remove('selected-div'));
+
+    // Hide the options menu
+    hideSelectionOptions();
+
+    // Transition to NORMAL state
+    currentState = State.NORMAL;
 }
+
 
 function downloadText(text) {
     const blob = new Blob([text], { type: 'text/plain' });
