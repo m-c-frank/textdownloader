@@ -65,7 +65,7 @@ Contributions to the textdownloader browser extension are appreciated. If you ha
 
 ## License
 
-The textdownloader browser extension is open-source and licensed under the [GOS License](LICENSE.md).
+The textdownloader browser extension is open-source and licensed under the [GOS License](https://github.com/m-c-frank/textdownloader/blob/main/LICENCE.md).
 
 ## Credits
 
