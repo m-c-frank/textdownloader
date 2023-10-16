@@ -1,58 +1,72 @@
-# textdownloader Browser Extension
+# textdownloader
 
-## Overview
-
-textdownloader is a user-friendly browser extension that simplifies the process of saving plain text from web pages to your personal knowledge database or notes. This extension makes it easy to quickly download interesting text content for your reference. This readme provides an overview of the textdownloader browser extension and its straightforward usage.
+textdownloader is a user-friendly browser extension designed to simplify the process of saving plain text from web pages to your personal knowledge database or notes. With the ability to quickly highlight and download interesting text content, this tool ensures that users can efficiently save web content for future reference.
 
 ## Features
 
-### Easy Highlighting and Selection
+- Easy-to-use text highlighting and selection.
+- Activates with a simple keyboard shortcut (Shift + 'T').
+- Offers streamlined interaction for parent highlighting, content downloading, and deselection.
+- Compatible with popular web browsers like Google Chrome and Mozilla Firefox.
 
-1. **Activate Highlight Mode**: Simply press Shift + 'T' to activate the highlight mode.
+## Directory Structure
 
-2. **Highlighting**: Hover over HTML `<div>` elements you want to save. They'll be highlighted automatically.
+```bash
+.
+├── LICENCE.md           # License file for the project
+├── README.md            # Project's README file
+├── background.js        # Background script for the extension
+├── content.js           # Content script handling page interactions
+├── eventHandlers.js     # Event handlers for the extension
+├── icons                # Directory containing icons for the extension
+│   ├── LICENSE          # License for the icons
+│   ├── close.svg        # Close icon SVG
+│   ├── download.svg     # Download icon SVG
+│   ├── folder.svg       # Folder icon SVG
+│   ├── icon.svg         # Main icon SVG
+│   ├── icon_128.png     # Icon (128x128 pixels)
+│   ├── icon_16.png      # Icon (16x16 pixels)
+│   └── icon_48.png      # Icon (48x48 pixels)
+├── manifest.json        # Extension manifest file
+├── optionHandlers.js    # Handlers for extension options
+├── popup.html           # Popup UI for the extension
+├── popup.js             # Logic for the popup UI
+└── styles.css           # Styling for the extension UI
+```
 
-3. **Select**: Click on a highlighted element to select it.
+## Setup
 
-### Streamlined Interaction
+1. Clone the repository:
 
-- **Highlight Parent**: Click "Highlight Parent" to highlight and select the parent of the currently selected element.
+    ```bash
+    git clone [repository_url]
+    cd textdownloader
+    ```
 
-- **Download Content**: Click "Download Content" to quickly save the text content of the selected element as a text file.
-
-- **Deselect**: Click "Deselect" to clear all selections and exit highlight mode.
-
-## Getting Started
-
-To get started with textdownloader, follow these simple steps:
-
-1. **Clone the Repository**:
-   - If you want to load the extension from the source code, first clone the textdownloader repository from GitHub to your local machine.
-
-2. **Load Unpacked Extension**:
-   - Open your browser and go to the extension management page (e.g., `chrome://extensions/` for Chrome or `about:addons` for Firefox).
+2. Load the unpacked extension:
+   - Open your browser and navigate to the extension management page (e.g., `chrome://extensions/` for Chrome or `about:addons` for Firefox).
    - Enable "Developer mode" by toggling the switch in the upper-right corner of the page.
    - Click the "Load unpacked" button and select the directory where you cloned the textdownloader repository.
-   - The textdownloader extension should now be loaded in your browser.
 
-3. **Open a Web Page**
-Once the extension is installed and activated, open a web page in your browser.
+## Usage
 
-4. **Start Using textdownloader**:
-Use the provided keyboard shortcuts and interface buttons to highlight, select, and download text content from web pages.
+1. Open a web page in your browser.
+2. Press Shift + 'T' to activate the highlight mode.
+3. Hover over HTML `<div>` elements to highlight and click to select them.
+4. Use the provided interface buttons to interact with highlighted elements.
 
-## Compatibility
-
-The textdownloader browser extension is designed to work effortlessly with popular web browsers like Google Chrome and Mozilla Firefox. It is tailored to simplify the task of saving text content from web pages for personal knowledge management.
+## Related Tools
+<!--START_TOKEN-->
+<!--END_TOKEN-->
 
 ## Contributing
 
-Contributions to the textdownloader browser extension are welcome. If you have ideas for improvements or new features, please feel free to submit issues, suggestions, or pull requests in this repository.
+Contributions to the textdownloader browser extension are appreciated. If you have ideas for enhancements or new features, please feel free to submit issues, suggestions, or pull requests in this repository or reach out directly!
 
 ## License
 
-The textdownloader browser extension is open-source and available under the [GOS License](LICENSE.md).
+The textdownloader browser extension is open-source and licensed under the [GOS License](LICENSE.md).
 
 ## Credits
 
-The textdownloader browser extension is developed and maintained by [Martin Christoph Frank](https://github.com/m-c-frank). If you have any questions or need assistance, please contact [martin7.frank7@gmail.com](martin7.frank7@gmail.com).
+textdownloader is developed and maintained by [Martin Christoph Frank](https://github.com/m-c-frank). For inquiries or assistance, please contact [martin7.frank7@gmail.com](martin7.frank7@gmail.com).
